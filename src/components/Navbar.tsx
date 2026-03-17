@@ -7,6 +7,7 @@ const navItems = [
   { label: "Home", path: "/" },
   { label: "Diabetes", path: "/diabetes" },
   { label: "Dementia", path: "/dementia" },
+  { label: "About", path: "/about" },
 ];
 
 export const Navbar = () => {
@@ -30,18 +31,9 @@ export const Navbar = () => {
               <Link
                 key={item.path}
                 to={item.path}
-                className="relative px-4 py-2 text-sm font-medium transition-colors"
+                className={`relative px-4 py-2 text-sm font-medium transition-colors ${isActive ? "bg-secondary rounded-lg text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-pill"
-                    className="absolute inset-0 bg-secondary rounded-lg"
-                    transition={{ type: "spring", duration: 0.4, bounce: 0.1 }}
-                  />
-                )}
-                <span className={`relative z-10 ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}>
-                  {item.label}
-                </span>
+                {item.label}
               </Link>
             );
           })}
@@ -52,14 +44,7 @@ export const Navbar = () => {
           className="w-9 h-9 rounded-lg bg-secondary flex items-center justify-center hover:bg-accent transition-colors"
           aria-label="Toggle theme"
         >
-          <motion.div
-            key={theme}
-            initial={{ rotate: -90, opacity: 0 }}
-            animate={{ rotate: 0, opacity: 1 }}
-            transition={{ duration: 0.3, ease: [0.2, 0, 0, 1] }}
-          >
-            {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-          </motion.div>
+          {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
         </button>
       </div>
       <div className="h-px bg-border" />

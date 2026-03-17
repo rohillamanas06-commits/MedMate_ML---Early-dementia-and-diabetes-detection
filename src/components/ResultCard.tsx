@@ -22,12 +22,7 @@ export const ResultCard = ({ prediction, confidence, riskLevel, probabilities }:
   }[riskLevel] || "";
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.2, 0, 0, 1] }}
-      className="mt-8 p-6 rounded-2xl bg-card shadow-layered"
-    >
+    <div className="mt-8 p-6 rounded-2xl bg-card shadow-layered">
       <div className="flex items-center gap-3 mb-4">
         <span className={riskColor}>{riskIcon}</span>
         <h3 className="text-xl font-semibold">Result: {prediction}</h3>
@@ -50,17 +45,15 @@ export const ResultCard = ({ prediction, confidence, riskLevel, probabilities }:
           <div key={label} className="flex items-center gap-3">
             <span className="text-sm w-28 text-muted-foreground">{label}</span>
             <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${value}%` }}
-                transition={{ duration: 0.8, ease: [0.2, 0, 0, 1] }}
+              <div
+                style={{ width: `${value}%` }}
                 className="h-full rounded-full bg-primary"
               />
-            </div>
+      </div>
             <span className="text-sm font-mono w-14 text-right">{value}%</span>
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
