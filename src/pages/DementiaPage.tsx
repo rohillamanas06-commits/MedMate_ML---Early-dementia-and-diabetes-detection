@@ -90,7 +90,7 @@ const DementiaPage = () => {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
-          <FormField label="Sex">
+          <FormField label="Gender">
             <div className="flex gap-2">
               {(["M", "F"] as const).map((g) => (
                 <button
