@@ -17,6 +17,6 @@
     }
   ],
   "env": {
-    "VITE_API_URL": "@api_url"
+    "VITE_API_URL": "https://early-dementia-and-diabetes.onrender.com"
   }
 }
