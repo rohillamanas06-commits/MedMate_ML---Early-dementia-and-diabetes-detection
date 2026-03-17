@@ -24,7 +24,7 @@ export const Navbar = () => {
           <span className="text-lg font-semibold tracking-tight">MedMate</span>
         </Link>
 
-        <div className="flex items-center gap-1">
+        <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center gap-1">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
