@@ -79,26 +79,26 @@ const DiabetesPage = () => {
   };
 
   return (
-    <div className="min-h-screen pt-16">
-      <div className="max-w-2xl mx-auto px-6 py-16">
+    <div className="min-h-screen pt-14 sm:pt-16">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-              <Droplets className="w-5 h-5" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-muted flex items-center justify-center">
+              <Droplets className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Diabetes Screening</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Diabetes Screening</h1>
           </div>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">
             Enter patient details and symptom profile. All 16 features are used for prediction.
           </p>
         </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <FormField label="Age">
               <input
                 type="number"
@@ -106,7 +106,7 @@ const DiabetesPage = () => {
                 onChange={(e) => setAge(Number(e.target.value))}
                 min={1}
                 max={120}
-                className="w-full h-11 px-4 rounded-xl bg-muted text-foreground font-mono text-sm outline-none focus:ring-2 focus:ring-ring transition-all"
+                className="w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl bg-muted text-foreground font-mono text-sm outline-none focus:ring-2 focus:ring-ring transition-all"
               />
             </FormField>
             <FormField label="Gender">
@@ -116,7 +116,7 @@ const DiabetesPage = () => {
                     key={g}
                     type="button"
                     onClick={() => setGender(g)}
-                    className={`flex-1 h-11 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    className={`flex-1 h-10 sm:h-11 rounded-xl text-sm font-medium transition-all duration-200 ${
                       gender === g
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-muted-foreground hover:bg-accent"
@@ -131,7 +131,7 @@ const DiabetesPage = () => {
 
           <div>
             <h2 className="text-sm font-medium text-foreground mb-3">Symptoms</h2>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {SYMPTOMS.map((s) => (
                 <ToggleOption
                   key={s}
@@ -146,7 +146,7 @@ const DiabetesPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-150 disabled:opacity-50"
+            className="w-full h-11 sm:h-12 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 text-sm sm:text-base"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Run Prediction"}
           </button>
@@ -156,7 +156,7 @@ const DiabetesPage = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 text-sm text-destructive text-center"
+            className="mt-4 text-xs sm:text-sm text-destructive text-center px-4"
           >
             {error}
           </motion.p>

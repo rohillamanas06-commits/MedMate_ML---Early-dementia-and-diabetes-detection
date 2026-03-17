@@ -10,9 +10,9 @@ interface ResultProps {
 
 export const ResultCard = ({ prediction, confidence, riskLevel, probabilities }: ResultProps) => {
   const riskIcon = {
-    High: <AlertTriangle className="w-5 h-5" />,
-    Medium: <AlertCircle className="w-5 h-5" />,
-    Low: <CheckCircle className="w-5 h-5" />,
+    High: <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />,
+    Medium: <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />,
+    Low: <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />,
   }[riskLevel];
 
   const riskColor = {
@@ -22,35 +22,35 @@ export const ResultCard = ({ prediction, confidence, riskLevel, probabilities }:
   }[riskLevel] || "";
 
   return (
-    <div className="mt-8 p-6 rounded-2xl bg-card shadow-layered">
-      <div className="flex items-center gap-3 mb-4">
+    <div className="mt-6 sm:mt-8 p-4 sm:p-6 rounded-2xl bg-card shadow-layered">
+      <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
         <span className={riskColor}>{riskIcon}</span>
-        <h3 className="text-xl font-semibold">Result: {prediction}</h3>
+        <h3 className="text-lg sm:text-xl font-semibold">Result: {prediction}</h3>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="p-4 rounded-xl bg-muted">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
+        <div className="p-3 sm:p-4 rounded-xl bg-muted">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Confidence</p>
-          <p className="text-2xl font-semibold font-mono">{confidence}%</p>
+          <p className="text-xl sm:text-2xl font-semibold font-mono">{confidence}%</p>
         </div>
-        <div className="p-4 rounded-xl bg-muted">
+        <div className="p-3 sm:p-4 rounded-xl bg-muted">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">Risk Level</p>
-          <p className={`text-2xl font-semibold ${riskColor}`}>{riskLevel}</p>
+          <p className={`text-xl sm:text-2xl font-semibold ${riskColor}`}>{riskLevel}</p>
         </div>
       </div>
 
       <div className="space-y-2">
         <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Probabilities</p>
         {Object.entries(probabilities).map(([label, value]) => (
-          <div key={label} className="flex items-center gap-3">
-            <span className="text-sm w-28 text-muted-foreground">{label}</span>
+          <div key={label} className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xs sm:text-sm w-24 sm:w-28 text-muted-foreground shrink-0">{label}</span>
             <div className="flex-1 h-2 rounded-full bg-muted overflow-hidden">
               <div
                 style={{ width: `${value}%` }}
-                className="h-full rounded-full bg-primary"
+                className="h-full rounded-full bg-primary transition-all duration-500"
               />
-      </div>
-            <span className="text-sm font-mono w-14 text-right">{value}%</span>
+            </div>
+            <span className="text-xs sm:text-sm font-mono w-12 sm:w-14 text-right">{value}%</span>
           </div>
         ))}
       </div>

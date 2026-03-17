@@ -71,25 +71,25 @@ const DementiaPage = () => {
   };
 
   return (
-    <div className="min-h-screen pt-16">
-      <div className="max-w-2xl mx-auto px-6 py-16">
+    <div className="min-h-screen pt-14 sm:pt-16">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16">
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-              <Brain className="w-5 h-5" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-muted flex items-center justify-center">
+              <Brain className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <h1 className="text-3xl font-bold tracking-tight">Dementia Screening</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Dementia Screening</h1>
           </div>
-          <p className="text-muted-foreground mb-8">
+          <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8">
             Enter MRI-derived biomarkers and cognitive assessment scores.
           </p>
         </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <FormField label="Sex">
             <div className="flex gap-2">
               {(["M", "F"] as const).map((g) => (
@@ -97,7 +97,7 @@ const DementiaPage = () => {
                   key={g}
                   type="button"
                   onClick={() => setGender(g)}
-                  className={`flex-1 h-11 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  className={`flex-1 h-10 sm:h-11 rounded-xl text-sm font-medium transition-all duration-200 ${
                     gender === g
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-accent"
@@ -109,7 +109,7 @@ const DementiaPage = () => {
             </div>
           </FormField>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             {FIELDS.map((f) => (
               <FormField key={f.key} label={f.label} description={f.description}>
                 <input
@@ -121,7 +121,7 @@ const DementiaPage = () => {
                   min={f.min}
                   max={f.max}
                   step={f.step}
-                  className="w-full h-11 px-4 rounded-xl bg-muted text-foreground font-mono text-sm outline-none focus:ring-2 focus:ring-ring transition-all"
+                  className="w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl bg-muted text-foreground font-mono text-sm outline-none focus:ring-2 focus:ring-ring transition-all"
                 />
               </FormField>
             ))}
@@ -130,7 +130,7 @@ const DementiaPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-150 disabled:opacity-50"
+            className="w-full h-11 sm:h-12 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 text-sm sm:text-base"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Run Prediction"}
           </button>
@@ -140,7 +140,7 @@ const DementiaPage = () => {
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 text-sm text-destructive text-center"
+            className="mt-4 text-xs sm:text-sm text-destructive text-center px-4"
           >
             {error}
           </motion.p>
