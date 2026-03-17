@@ -1,0 +1,5 @@
+/models
+/node_modules
+.env
+dementia_data.csv
+diabetes_data.csv
