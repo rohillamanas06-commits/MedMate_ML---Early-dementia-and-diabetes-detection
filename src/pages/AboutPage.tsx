@@ -7,7 +7,7 @@ const AboutPage = () => {
         </h1>
         <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed space-y-4">
           <span className="block">
-            MedMate ML is a user-friendly web application that helps predict health risks like dementia and diabetes. 
+            MedMate is a user-friendly web application that helps predict health risks like dementia and diabetes. 
             It provides quick assessments and easy-to-understand results, making health monitoring accessible for everyone.
           </span>
           
@@ -19,7 +19,7 @@ const AboutPage = () => {
           
           <span className="block mt-4">
             With MedMate, users can take proactive steps toward their well-being, gain valuable insights into their 
-            health status, and make informed decisions—all with privacy and security in mind.
+            health status, and make informed decisions all with privacy and security in mind.
           </span>
         </p>
       </div>
