@@ -68,6 +68,8 @@ const DiabetesPage = () => {
       });
       if (!res.ok) throw new Error("Prediction failed");
       const data = await res.json();
+      // Add artificial delay for smoother UI
+      await new Promise((resolve) => setTimeout(resolve, 500));
       setResult(data);
     } catch {
       setError("Could not reach the prediction server. Make sure the Flask backend is running.");
