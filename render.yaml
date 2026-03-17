@@ -6,7 +6,7 @@ services:
     startCommand: gunicorn MedMate_ml:app
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.5
+        value: 3.8.1
       - key: FLASK_ENV
         value: production
       - key: FLASK_PORT
