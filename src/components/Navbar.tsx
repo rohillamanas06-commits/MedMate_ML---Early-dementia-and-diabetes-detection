@@ -18,9 +18,7 @@ export const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Activity className="w-4 h-4 text-primary-foreground" />
-          </div>
+          <img src="/favicon.ico" alt="MedMate Logo" className="w-8 h-8 rounded-lg" />
           <span className="text-lg font-semibold tracking-tight">MedMate</span>
         </Link>
 
