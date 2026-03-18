@@ -32,9 +32,7 @@ const Index = () => {
             {...fadeUp}
             transition={{ ...fadeUp.transition, delay: 0.2 }}
             className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6 sm:mb-8 lg:mb-10 leading-relaxed px-4"
-          >
-            MedMate uses machine learning to assess diabetes and dementia risk
-            from clinical indicators. Fast, private, and evidence-based.
+          >MedMate uses advanced machine learning algorithms to assess the risk of diabetes and dementia based on clinical indicators you provide. Our platform delivers fast, private, and evidence-based predictions to support early detection and proactive health management.
           </motion.p>
           <motion.div
             {...fadeUp}

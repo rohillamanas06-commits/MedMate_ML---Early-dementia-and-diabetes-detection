@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Droplets, Loader2 } from "lucide-react";
+import { Droplets, Loader2, AlertTriangle, Info } from "lucide-react";
 import { FormField, ToggleOption } from "@/components/FormField";
 import { ResultCard } from "@/components/ResultCard";
 
@@ -33,6 +33,7 @@ interface Result {
   confidence: number;
   risk_level: string;
   probabilities: Record<string, number>;
+  warning?: string;
 }
 
 const DiabetesPage = () => {
@@ -45,19 +46,25 @@ const DiabetesPage = () => {
   const [result, setResult] = useState<Result | null>(null);
   const [error, setError] = useState("");
 
+  const getAgeWarning = (a: number) => {
+    if (a < 1 || a > 120) return { level: "error" as const, msg: "Please enter a valid age between 1 and 120." };
+    if (a < 16) return { level: "warn" as const, msg: "This model was trained on patients aged 16–90. Results for patients under 16 may be unreliable. Please consult a paediatrician." };
+    if (a > 90) return { level: "warn" as const, msg: "This model was trained on patients up to age 90. Results may be less accurate for older patients." };
+    return null;
+  };
+
+  const ageWarning = getAgeWarning(age);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (age < 1 || age > 120) return;
+
     setLoading(true);
     setError("");
     setResult(null);
 
-    const payload: Record<string, unknown> = {
-      Age: age,
-      Gender: gender,
-    };
-    SYMPTOMS.forEach((s) => {
-      payload[s] = symptoms[s] ? "Yes" : "No";
-    });
+    const payload: Record<string, unknown> = { Age: age, Gender: gender };
+    SYMPTOMS.forEach((s) => { payload[s] = symptoms[s] ? "Yes" : "No"; });
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:5000";
@@ -66,9 +73,11 @@ const DiabetesPage = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) throw new Error("Prediction failed");
       const data = await res.json();
-      // Add artificial delay for smoother UI
+      if (!res.ok) {
+        setError(data.message || data.error || "Prediction failed.");
+        return;
+      }
       await new Promise((resolve) => setTimeout(resolve, 500));
       setResult(data);
     } catch {
@@ -99,16 +108,40 @@ const DiabetesPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            <FormField label="Age">
+
+            {/* Age with live warning */}
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Age</label>
               <input
                 type="number"
                 value={age}
                 onChange={(e) => setAge(Number(e.target.value))}
                 min={1}
                 max={120}
-                className="w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl bg-muted text-foreground font-mono text-sm outline-none focus:ring-2 focus:ring-ring transition-all"
+                className={`w-full h-10 sm:h-11 px-3 sm:px-4 rounded-xl bg-muted text-foreground font-mono text-sm outline-none focus:ring-2 transition-all ${
+                  ageWarning?.level === "error"
+                    ? "ring-2 ring-destructive"
+                    : ageWarning?.level === "warn"
+                    ? "ring-2 ring-yellow-400"
+                    : "focus:ring-ring"
+                }`}
               />
-            </FormField>
+              {ageWarning && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex items-start gap-1.5 rounded-lg px-3 py-2 text-xs leading-snug ${
+                    ageWarning.level === "error"
+                      ? "bg-destructive/10 text-destructive"
+                      : "bg-yellow-400/10 text-yellow-600 dark:text-yellow-400"
+                  }`}
+                >
+                  <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" />
+                  {ageWarning.msg}
+                </motion.div>
+              )}
+            </div>
+
             <FormField label="Gender">
               <div className="flex gap-2">
                 {(["Male", "Female"] as const).map((g) => (
@@ -129,6 +162,8 @@ const DiabetesPage = () => {
             </FormField>
           </div>
 
+         
+
           <div>
             <h2 className="text-sm font-medium text-foreground mb-3">Symptoms</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -145,21 +180,33 @@ const DiabetesPage = () => {
 
           <button
             type="submit"
-            disabled={loading}
-            className="w-full h-11 sm:h-12 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 text-sm sm:text-base"
+            disabled={loading || ageWarning?.level === "error"}
+            className="w-full h-11 sm:h-12 rounded-xl bg-primary text-primary-foreground font-medium flex items-center justify-center gap-2 hover:-translate-y-0.5 active:scale-[0.98] transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Run Prediction"}
           </button>
         </form>
 
         {error && (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-4 text-xs sm:text-sm text-destructive text-center px-4"
+            className="mt-4 flex items-start gap-2 px-4 py-3 rounded-xl bg-destructive/10 text-destructive text-xs sm:text-sm"
           >
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
             {error}
-          </motion.p>
+          </motion.div>
+        )}
+
+        {result?.warning && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4 flex items-start gap-2 px-4 py-3 rounded-xl bg-yellow-400/10 border border-yellow-400/30 text-xs sm:text-sm text-yellow-700 dark:text-yellow-300"
+          >
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+            {result.warning}
+          </motion.div>
         )}
 
         {result && (
