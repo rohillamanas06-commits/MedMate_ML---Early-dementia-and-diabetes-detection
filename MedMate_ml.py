@@ -304,7 +304,12 @@ def train_dementia_model():
 def load_or_train(model_path, encoder_path, train_fn):
     if model_path.exists() and encoder_path.exists():
         log.info(f"Loading cached model from {model_path}")
-        return joblib.load(model_path), joblib.load(encoder_path)
+        try:
+            return joblib.load(model_path), joblib.load(encoder_path)
+        except Exception as e:
+            log.warning(f"Failed to load cached model: {e}")
+            log.info("Retraining model instead...")
+            return train_fn()
     return train_fn()
 
 
