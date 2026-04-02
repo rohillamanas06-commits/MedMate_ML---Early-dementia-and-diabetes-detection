@@ -1,5 +1,13 @@
 # 🩺 MedMate ML - AI Health Prediction Platform
 
+## 📸 Screenshots
+
+![Screenshot 1](/public/Screenshot%202026-04-02%20185749.png)
+![Screenshot 2](/public/Screenshot%202026-04-02%20185820.png)
+![Screenshot 3](/public/Screenshot%202026-04-02%20185900.png)
+
+---
+
 ## 🌟 Overview
 
 MedMate ML is an AI-powered web application designed to predict health conditions such as dementia and diabetes using advanced machine learning models. Built with React, Python, and Tailwind CSS, MedMate ML empowers users to assess health risks and make informed decisions.
