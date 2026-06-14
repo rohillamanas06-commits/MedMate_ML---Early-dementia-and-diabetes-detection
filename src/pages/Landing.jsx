@@ -45,22 +45,23 @@ export default function Landing() {
             <span className="font-display text-xl tracking-tight font-semibold">MedMate</span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-1 sm:gap-4">
             {isAuthenticated ? (
               <Link to="/dashboard" data-testid="landing-dashboard-btn">
-                <Button className="rounded-md px-3 text-white bg-transparent hover:bg-black hover:text-white transition-colors" variant="ghost">
-                  Dashboard
+                <Button className="rounded-md px-2 sm:px-3 text-white bg-transparent hover:bg-black hover:text-white transition-colors text-xs sm:text-sm h-8 sm:h-10" variant="ghost">
+                  <span className="hidden sm:inline">Dashboard</span>
+                  <LayoutDashboard className="h-4 w-4 sm:hidden" />
                 </Button>
               </Link>
             ) : (
               <Link to="/login" data-testid="landing-login-btn">
-                <Button className="rounded-md px-3 text-white bg-transparent hover:bg-black hover:text-white transition-colors" variant="ghost">
-                  <LogIn className="mr-1.5 h-4 w-4" /> Sign In
+                <Button className="rounded-md px-2 sm:px-3 text-white bg-transparent hover:bg-black hover:text-white transition-colors text-xs sm:text-sm h-8 sm:h-10" variant="ghost">
+                  <LogIn className="sm:mr-1.5 h-4 w-4" /> <span className="hidden sm:inline">Sign In</span>
                 </Button>
               </Link>
             )}
-            <Button size="icon" onClick={() => setSidebarOpen(true)} className="rounded-md text-white bg-transparent hover:bg-black hover:text-white transition-colors flex" variant="ghost">
-              <Sidebar className="h-5 w-5" />
+            <Button size="icon" onClick={() => setSidebarOpen(true)} className="rounded-md h-8 w-8 sm:h-10 sm:w-10 text-white bg-transparent hover:bg-black hover:text-white transition-colors flex" variant="ghost">
+              <Sidebar className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
         </header>

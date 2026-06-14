@@ -86,30 +86,30 @@ export default function HistoryDetail() {
     <div className="flex flex-col h-full min-h-[calc(100vh-65px)]">
 
       {/* ── Top bar ──────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-8 py-4 border-b border-border bg-background/60 backdrop-blur-sm sticky top-[65px] z-10">
+      <div className="flex items-center justify-between px-4 sm:px-8 py-3 sm:py-4 border-b border-border bg-background sticky top-[65px] z-10">
         <button
           onClick={() => navigate("/dashboard")}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Dashboard
+          <ArrowLeft className="h-5 w-5 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Back to Dashboard</span>
         </button>
 
-        <div className="flex items-center gap-3">
-          {/* Type badge */}
-          <span className="flex items-center gap-2 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Type badge — hidden on mobile */}
+          <span className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
             {isDemo
               ? <Activity className="h-4 w-4 text-primary" />
               : <Brain className="h-4 w-4 text-primary" />}
             {isDemo ? "Diabetes Readmission" : "Dementia Assessment"}
           </span>
 
-          {/* Risk badge — no icon */}
+          {/* Risk badge */}
           <span
-            className="rounded-full px-3 py-1 text-xs font-semibold"
+            className="rounded-full px-2 py-0.5 sm:px-3 sm:py-1 text-[10px] sm:text-xs font-semibold"
             style={{ backgroundColor: bg, color }}
           >
-            {item.risk_level} Risk
+            {item.risk_level} <span className="hidden sm:inline">Risk</span>
           </span>
 
           {/* Delete — icon only */}
