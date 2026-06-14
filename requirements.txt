@@ -8,3 +8,7 @@ pandas
 numpy
 joblib
 python-dotenv
+gunicorn
+psycopg2-binary
+bcrypt
+PyJWT
