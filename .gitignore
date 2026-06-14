@@ -1,4 +1,7 @@
 /node_modules
 .env
-dementia_data.csv
-diabetes_data.csv
+diabetic_data.csv
+investigator_nacc73.csv
+result.txt
+models/
+*.pkl

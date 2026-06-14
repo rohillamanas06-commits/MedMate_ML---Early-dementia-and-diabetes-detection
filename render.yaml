@@ -10,5 +10,5 @@ services:
       - key: FLASK_PORT
         value: 10000
       - key: CORS_ORIGINS
-        value: https://your-frontend-domain.vercel.app
+        value:*
     healthCheckPath: /health
