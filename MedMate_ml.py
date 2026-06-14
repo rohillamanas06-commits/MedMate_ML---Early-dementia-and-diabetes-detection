@@ -485,10 +485,22 @@ CORS(app, resources={r"/*": {
 # ── DB init + model load ──────────────────────────────────────────────────────
 init_db()
 
-diabetes_model, diabetes_encoders = load_or_train(
-    DIABETES_MODEL_PATH, DIABETES_ENCODER_PATH, train_diabetes_model)
-dementia_model, dementia_encoders = load_or_train(
-    DEMENTIA_MODEL_PATH, DEMENTIA_ENCODER_PATH, train_dementia_model)
+# ── Lazy model loader ──────────────────────────────────────────────────────────
+import threading
+_model_lock = threading.Lock()
+_models = {}
+
+def get_model(kind: str):
+    if kind not in _models:
+        with _model_lock:
+            if kind not in _models:
+                if kind == "diabetes":
+                    _models[kind] = load_or_train(
+                        DIABETES_MODEL_PATH, DIABETES_ENCODER_PATH, train_diabetes_model)
+                else:
+                    _models[kind] = load_or_train(
+                        DEMENTIA_MODEL_PATH, DEMENTIA_ENCODER_PATH, train_dementia_model)
+    return _models[kind]
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -879,6 +891,7 @@ def predict_diabetes():
             return jsonify({"error": f"age must be one of {list(AGE_MAP.keys())}"}), 422
 
         row = pd.DataFrame([{f: data[f] for f in DIABETES_BASE_FEATURES}])
+        diabetes_model, diabetes_encoders = get_model("diabetes")
         X, _, _ = preprocess_diabetes(row, encoders=diabetes_encoders, fit=False)
 
         pred        = diabetes_model.predict(X.values)[0]
@@ -937,6 +950,7 @@ def predict_dementia():
             return jsonify({"error": f"CDRGLOB must be one of {sorted(CDR_VALID)}. Got {cdr}."}), 422
 
         row = pd.DataFrame([{f: data[f] for f in DEMENTIA_BASE_FEATURES}])
+        dementia_model, dementia_encoders = get_model("dementia")
         X, _, _ = preprocess_dementia(row, encoders=dementia_encoders, fit=False)
 
         pred       = dementia_model.predict(X.values)[0]
@@ -980,12 +994,15 @@ def predict_dementia():
 @app.route("/retrain", methods=["POST"])
 @require_auth
 def retrain():
-    global diabetes_model, diabetes_encoders, dementia_model, dementia_encoders
     try:
         if request.headers.get("X-Admin-Key", "") != ADMIN_KEY:
             return jsonify({"error": "Unauthorized"}), 401
-        diabetes_model, diabetes_encoders = train_diabetes_model()
-        dementia_model, dementia_encoders = train_dementia_model()
+        
+        # Clear cache and force retrain
+        with _model_lock:
+            _models["diabetes"] = train_diabetes_model()
+            _models["dementia"] = train_dementia_model()
+            
         return jsonify({"status": "retrained successfully"})
     except Exception as e:
         log.exception("Retrain error")
