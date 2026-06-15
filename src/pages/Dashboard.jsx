@@ -5,7 +5,7 @@ import { api } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import {
   Activity, Brain, TrendingUp, ShieldAlert, ShieldCheck,
-  ShieldQuestion, Loader2, ArrowRight
+  ShieldQuestion, Loader2, ArrowRight, Trash2
 } from "lucide-react";
 
 const RISK_DOT = { High: "#E2725B", Medium: "#CC7722", Low: "#71A6D2" };
@@ -69,6 +69,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [data, setData]               = useState(null);
   const [loadingData, setLoadingData] = useState(true);
+  const [deleting, setDeleting]       = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) navigate("/login", { replace: true });
@@ -82,6 +83,20 @@ export default function Dashboard() {
   };
 
   useEffect(() => { if (isAuthenticated) refresh(); }, [isAuthenticated]);
+
+  const handleDeleteAll = async () => {
+    if (!window.confirm("Are you sure you want to delete all history?")) return;
+    setDeleting(true);
+    try {
+      await api.deleteHistoryAll();
+      await refresh();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to delete history.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const stats = data?.stats;
 
@@ -111,9 +126,21 @@ export default function Dashboard() {
 
           <Card className="mt-8 rounded-2xl border-border bg-card p-6" data-testid="history-card">
             <div className="flex items-center justify-between mb-1">
-              <h3 className="font-display text-xl font-medium">Recent Activity</h3>
+              <div>
+                <h3 className="font-display text-xl font-medium">Recent Activity</h3>
+                {data?.history?.length > 0 && (
+                  <p className="text-xs text-muted-foreground">Click a row to view full details</p>
+                )}
+              </div>
               {data?.history?.length > 0 && (
-                <p className="text-xs text-muted-foreground">Click a row to view full details</p>
+                <button
+                  onClick={handleDeleteAll}
+                  disabled={deleting}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-red-500/40 text-red-500 hover:bg-red-500/10 transition-colors disabled:opacity-40"
+                  title="Delete all history"
+                >
+                  {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                </button>
               )}
             </div>
 

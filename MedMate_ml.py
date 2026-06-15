@@ -485,21 +485,21 @@ CORS(app, resources={r"/*": {
 # ── DB init + model load ──────────────────────────────────────────────────────
 init_db()
 
-# ── Lazy model loader ──────────────────────────────────────────────────────────
+# ── Eager model loader ─────────────────────────────────────────────────────────
 import threading
 _model_lock = threading.Lock()
 _models = {}
 
+def init_models():
+    log.info("Eagerly loading models...")
+    _models["diabetes"] = load_or_train(
+        DIABETES_MODEL_PATH, DIABETES_ENCODER_PATH, train_diabetes_model)
+    _models["dementia"] = load_or_train(
+        DEMENTIA_MODEL_PATH, DEMENTIA_ENCODER_PATH, train_dementia_model)
+
+init_models()
+
 def get_model(kind: str):
-    if kind not in _models:
-        with _model_lock:
-            if kind not in _models:
-                if kind == "diabetes":
-                    _models[kind] = load_or_train(
-                        DIABETES_MODEL_PATH, DIABETES_ENCODER_PATH, train_diabetes_model)
-                else:
-                    _models[kind] = load_or_train(
-                        DEMENTIA_MODEL_PATH, DEMENTIA_ENCODER_PATH, train_dementia_model)
     return _models[kind]
 
 

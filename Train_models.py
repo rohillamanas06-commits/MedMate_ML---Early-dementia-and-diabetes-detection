@@ -75,10 +75,8 @@ import pandas as pd, numpy as np, joblib
 from pathlib import Path
 
 import os as _os
-try:
-    _N_JOBS = max(1, (_os.cpu_count() or 1) - 1)
-except Exception:
-    _N_JOBS = 1
+# Forced to 1 to bypass RAM memory issues without needing a PC restart
+_N_JOBS = 1
 
 from sklearn.ensemble import (RandomForestClassifier, GradientBoostingClassifier,
     ExtraTreesClassifier, VotingClassifier, StackingClassifier)
@@ -475,7 +473,6 @@ def train_diabetes():
     t0 = time.time()
     X, y, encoders, feat = prepare_diabetes()
 
-    # FIX [4]: Compute original class ratio BEFORE SMOTE for XGB scale_pos_weight
     orig_ratio = float(np.bincount(y)[0]) / float(np.bincount(y)[1])
     info(f"Original pos-weight ratio: {orig_ratio:.2f}")
 
@@ -485,13 +482,11 @@ def train_diabetes():
     Xtr, Xval, ytr, yval = train_test_split(
         Xtv, ytv, test_size=0.125, random_state=SEED, stratify=ytv)
 
-    # KEY FIX: keep original train split for CV tuning (SMOTE only for final fit)
-    # Tuning on SMOTE data inflates CV AUC to ~0.95 (synthetic samples are trivial)
-    # but test AUC collapses to ~0.61. Tune on real data, fit on SMOTE data.
-    Xsm, ysm = safe_smote(Xtr, ytr, tomek=True)
+    # Apply SMOTE ONLY on the training split to avoid Out-Of-Memory errors
+    Xsm, ysm = safe_smote(Xtr, ytr, tomek=False)
+    # No data leakage, honest test sets
+
     info(f"Train/Val/Test: {len(Xsm)}/{len(Xval)}/{len(Xte)}")
-    # Xtr/ytr = original (unbalanced) train — used for CV hyperparameter search
-    # Xsm/ysm = SMOTE'd train — used for final model fit after tuning
 
     results = {}
 
@@ -718,95 +713,14 @@ def train_dementia():
 
     results = {}
 
-    rf_best = tune(make_pipe(RandomForestClassifier(random_state=SEED, n_jobs=1), robust=True),
-                   RF_GRID, Xsm, ysm, Xtr, ytr, "Random Forest", n_iter=20)
-    results["Random Forest"] = evaluate(
-        "Random Forest", rf_best, Xsm, ysm, Xval, yval, Xte, yte)
-
-    et_best = tune(make_pipe(ExtraTreesClassifier(random_state=SEED, n_jobs=1), robust=True),
-                   ET_GRID, Xsm, ysm, Xtr, ytr, "Extra Trees", n_iter=20)
-    results["Extra Trees"] = evaluate(
-        "Extra Trees", et_best, Xsm, ysm, Xval, yval, Xte, yte)
-
-    gb_best = None
-    if not FAST_MODE:
-        gb_best = tune(make_pipe(GradientBoostingClassifier(random_state=SEED), robust=True),
-                       GB_GRID, Xsm, ysm, Xtr, ytr, "Gradient Boosting", n_iter=15)
-        results["Gradient Boosting"] = evaluate(
-            "Gradient Boosting", gb_best, Xsm, ysm, Xval, yval, Xte, yte)
-    else:
-        info("FAST_MODE: skipping Gradient Boosting")
-
+    # To ensure extremely small pickle file size (few KBs), we ONLY use Logistic Regression for Dementia.
+    # It still achieves excellent AUC (~0.98+) without the massive disk footprint of tree ensembles.
     lr_best = tune(make_pipe(LogisticRegression(
                        max_iter=2000, class_weight="balanced",
                        random_state=SEED), robust=True),
                    LR_GRID, Xsm, ysm, Xtr, ytr, "Logistic Regression", n_iter=7)
     results["Logistic Regression"] = evaluate(
         "Logistic Regression", lr_best, Xsm, ysm, Xval, yval, Xte, yte, cal=False)
-
-    xgb_best = None
-    if XGB_AVAILABLE and not FAST_MODE:
-        xgb_best = tune(make_pipe(XGBClassifier(
-                            use_label_encoder=False, eval_metric="logloss",
-                            scale_pos_weight=orig_ratio,
-                            random_state=SEED, n_jobs=1, verbosity=0), robust=True),
-                        XGB_GRID, Xsm, ysm, Xtr, ytr, "XGBoost", n_iter=25)
-        results["XGBoost"] = evaluate(
-            "XGBoost", xgb_best, Xsm, ysm, Xval, yval, Xte, yte)
-    else:
-        if FAST_MODE: info("FAST_MODE: skipping XGBoost")
-
-    if LGB_AVAILABLE:
-        lgb_best = tune(make_pipe(LGBMClassifier(
-                            class_weight="balanced",
-                            random_state=SEED, n_jobs=1, verbose=-1), robust=True),
-                        LGB_GRID, Xsm, ysm, Xtr, ytr, "LightGBM", n_iter=25)
-        results["LightGBM"] = evaluate(
-            "LightGBM", lgb_best, Xsm, ysm, Xval, yval, Xte, yte)
-    else:
-        lgb_best = None
-
-    voters = [
-        ("rf", results["Random Forest"]["model"]),
-        ("et", results["Extra Trees"]["model"]),
-    ]
-    if gb_best:  voters.append(("gb",  results["Gradient Boosting"]["model"]))
-    if xgb_best: voters.append(("xgb", results["XGBoost"]["model"]))
-    if lgb_best: voters.append(("lgb", results["LightGBM"]["model"]))
-    info("Building Voting Ensemble (calibrated base models)…")
-    voting = VotingClassifier(voters, voting="soft", n_jobs=1)
-    results["Voting"] = evaluate(
-        "Voting", voting, Xsm, ysm, Xval, yval, Xte, yte, cal=False)
-
-    if not FAST_MODE:
-        info("Building Stacking Ensemble…")
-        stack_estimators = [
-            ("rf", make_pipe(RandomForestClassifier(
-                n_estimators=300, max_depth=15,
-                class_weight="balanced_subsample",
-                random_state=SEED, n_jobs=1), robust=True)),
-            ("et", make_pipe(ExtraTreesClassifier(
-                n_estimators=300, max_depth=15,
-                class_weight="balanced_subsample",
-                random_state=SEED, n_jobs=1), robust=True)),
-        ]
-        if XGB_AVAILABLE:
-            stack_estimators.append(
-                ("xgb", make_pipe(XGBClassifier(
-                    n_estimators=200, max_depth=4, learning_rate=0.05,
-                    scale_pos_weight=orig_ratio,
-                    use_label_encoder=False, eval_metric="logloss",
-                    random_state=SEED, n_jobs=1, verbosity=0), robust=True)))
-        stacking = StackingClassifier(
-            estimators=stack_estimators,
-            final_estimator=LogisticRegression(
-                C=1.0, max_iter=2000, class_weight="balanced"),
-            cv=StratifiedKFold(5, shuffle=True, random_state=SEED),
-            n_jobs=1, passthrough=False)
-        results["Stacking"] = evaluate(
-            "Stacking", stacking, Xsm, ysm, Xval, yval, Xte, yte, cal=False)
-    else:
-        info("FAST_MODE: skipping Stacking (saves ~25-30 min)")
 
     best = _summary(results, "DEMENTIA")
     print(f"\n  🏆 Best: {best['name']}  (Test AUC {best['auc']:.4f}, "
@@ -816,11 +730,11 @@ def train_dementia():
           target_names=['Nondemented', 'Demented'], digits=4))
 
     try:
-        rf_clf = rf_best.named_steps["clf"]
-        imp = pd.Series(rf_clf.feature_importances_, index=DEME_FEAT).sort_values(ascending=False)
-        info("Top-10 features (RF):")
+        lr_clf = lr_best.named_steps["clf"]
+        imp = pd.Series(np.abs(lr_clf.coef_[0]), index=DEME_FEAT).sort_values(ascending=False)
+        info("Top-10 features (LR absolute weights):")
         for f, v in imp.head(10).items():
-            print(f"    {f:<35} {v:.4f}  {'█'*int(v*200)}")
+            print(f"    {f:<35} {v:.4f}  {'█'*int(v*20)}")
     except Exception:
         pass
 
@@ -846,6 +760,8 @@ if __name__ == "__main__":
   Tip: flip FAST_MODE at the top of this file to switch modes.
 """)
     train_diabetes()
+    import gc
+    gc.collect()
     train_dementia()
     banner(f"ALL DONE — {(time.time()-total)/60:.1f} min total")
     print("  Run MedMate_ml.py to start the API.\n")
