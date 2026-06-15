@@ -123,7 +123,8 @@ function ModelSection({ title, icon: Icon, dataset, records, target, bestModel, 
 
       {/* Model comparison */}
       <Collapsible title="Model Comparison" icon={Layers} defaultOpen>
-        <div className="overflow-x-auto -mx-1">
+        {/* Desktop table — hidden on mobile */}
+        <div className="hidden sm:block overflow-x-auto -mx-1">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
@@ -131,13 +132,13 @@ function ModelSection({ title, icon: Icon, dataset, records, target, bestModel, 
                 <th className="py-2 px-2 font-medium">Accuracy</th>
                 <th className="py-2 px-2 font-medium">AUC</th>
                 <th className="py-2 px-2 font-medium">Macro F1</th>
-                <th className="py-2 px-2 font-medium hidden sm:table-cell">PR-AUC</th>
-                <th className="py-2 px-2 font-medium hidden sm:table-cell">MCC</th>
+                <th className="py-2 px-2 font-medium">PR-AUC</th>
+                <th className="py-2 px-2 font-medium">MCC</th>
               </tr>
             </thead>
             <tbody>
               {models.map(m => (
-                <tr key={m.name} className={`border-b border-border/50 last:border-0 ${m.best ? "bg-primary/5" : ""}`}>
+                <tr key={m.name} className="border-b border-border/50 last:border-0">
                   <td className="py-2.5 pr-4 font-medium whitespace-nowrap">
                     {m.name}
                     {m.best && <span className="ml-2 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">BEST</span>}
@@ -145,12 +146,46 @@ function ModelSection({ title, icon: Icon, dataset, records, target, bestModel, 
                   <td className="py-2.5 px-2 tabular-nums">{m.acc}</td>
                   <td className="py-2.5 px-2 tabular-nums font-semibold">{m.auc}</td>
                   <td className="py-2.5 px-2 tabular-nums">{m.f1}</td>
-                  <td className="py-2.5 px-2 tabular-nums hidden sm:table-cell">{m.prauc}</td>
-                  <td className="py-2.5 px-2 tabular-nums hidden sm:table-cell">{m.mcc}</td>
+                  <td className="py-2.5 px-2 tabular-nums">{m.prauc}</td>
+                  <td className="py-2.5 px-2 tabular-nums">{m.mcc}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile cards — visible only on mobile */}
+        <div className="sm:hidden space-y-3">
+          {models.map(m => (
+            <div key={m.name} className="rounded-xl border border-border/60 bg-secondary/30 p-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-sm">{m.name}</span>
+                {m.best && <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">BEST</span>}
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Accuracy</p>
+                  <p className="text-sm font-semibold tabular-nums">{m.acc}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">AUC</p>
+                  <p className="text-sm font-semibold tabular-nums">{m.auc}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Macro F1</p>
+                  <p className="text-sm font-semibold tabular-nums">{m.f1}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">PR-AUC</p>
+                  <p className="text-sm font-semibold tabular-nums">{m.prauc}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">MCC</p>
+                  <p className="text-sm font-semibold tabular-nums">{m.mcc}</p>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </Collapsible>
 
@@ -161,41 +196,6 @@ function ModelSection({ title, icon: Icon, dataset, records, target, bestModel, 
             <BarRow key={f.name} label={f.name} value={f.imp} maxValue={maxFeatureValue} />
           ))}
         </div>
-      </Collapsible>
-
-      {/* Risk logic */}
-      <Collapsible title="Risk Level Logic" icon={Target}>
-        {title.includes("Diabetes") ? (
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-3">
-              <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: "#E2725B1A", color: "#E2725B" }}>High</span>
-              <span className="text-muted-foreground">Predicted readmitted & confidence ≥ 70%</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: "#CC77221A", color: "#CC7722" }}>Medium</span>
-              <span className="text-muted-foreground">Predicted readmitted & confidence &lt; 70%</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: "#71A6D21A", color: "#71A6D2" }}>Low</span>
-              <span className="text-muted-foreground">Predicted not readmitted</span>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-3">
-              <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: "#E2725B1A", color: "#E2725B" }}>High</span>
-              <span className="text-muted-foreground">Predicted demented & confidence ≥ 75%</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: "#CC77221A", color: "#CC7722" }}>Medium</span>
-              <span className="text-muted-foreground">Predicted demented & confidence &lt; 75%, or predicted nondemented & confidence &lt; 75%</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: "#71A6D21A", color: "#71A6D2" }}>Low</span>
-              <span className="text-muted-foreground">Predicted nondemented & confidence ≥ 75%</span>
-            </div>
-          </div>
-        )}
       </Collapsible>
     </section>
   );
