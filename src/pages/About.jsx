@@ -7,7 +7,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans">
       <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur-md px-6 py-4">
-        <Button variant="ghost" onClick={() => navigate(-1)} className="gap-2 hover:bg-foreground hover:text-background transition-colors">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="-ml-8 gap-2 hover:bg-foreground hover:text-background transition-colors">
           <ChevronLeft className="h-4 w-4" /> Back
         </Button>
       </header>
