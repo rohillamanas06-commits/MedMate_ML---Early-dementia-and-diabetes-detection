@@ -75,7 +75,7 @@ function Collapsible({ title, icon: Icon, children, defaultOpen = false }) {
     <div className="rounded-2xl border border-border bg-card overflow-hidden">
       <button
         onClick={() => setOpen(v => !v)}
-        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-secondary/40 transition-colors"
+        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left transition-colors"
       >
         <div className="flex items-center gap-3">
           {Icon && <Icon className="h-4 w-4 text-primary" />}
