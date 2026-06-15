@@ -39,7 +39,7 @@ function HistoryRow({ item }) {
             ? <Activity className="h-4 w-4 text-primary" />
             : <Brain className="h-4 w-4 text-primary" />}
         </span>
-        <div className="min-w-0">
+        <div className="hidden sm:block min-w-0">
           <p className="text-sm font-medium truncate">{item.prediction}</p>
           <p className="text-xs text-muted-foreground truncate">
             {item.model_type === "diabetes" ? "Diabetes Readmission" : "Dementia"}
