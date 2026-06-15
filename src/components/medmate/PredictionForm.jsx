@@ -66,7 +66,7 @@ export default function PredictionForm({ type, groups, predictFn, onResult }) {
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Play className="mr-2 h-4 w-4" />}
             Run Assessment
           </Button>
-          <Button variant="outline" onClick={reset} disabled={loading} className="rounded-xl" data-testid={`reset-${type}-btn`}>
+          <Button variant="outline" onClick={reset} disabled={loading || !result} className="rounded-xl" data-testid={`reset-${type}-btn`}>
             <RotateCcw className="mr-2 h-4 w-4" /> Reset
           </Button>
         </div>
