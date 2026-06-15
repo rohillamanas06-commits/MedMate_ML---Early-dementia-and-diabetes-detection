@@ -3,6 +3,13 @@
 ## About MedMate
 MedMate is an advanced machine learning platform designed to provide clinical assessments for two critical conditions: **Diabetes Readmission Risk** and **Early Dementia Detection**. Built with a sleek, modern React frontend and a powerful Flask Python backend, MedMate empowers users and healthcare professionals with instant, data-driven insights.
 
+## 📸 Screenshots
+
+![Screenshot 1](./public/Screenshot%202026-06-15%20112332.png)
+![Screenshot 2](./public/Screenshot%202026-06-15%20112417.png)
+![Screenshot 3](./public/Screenshot%202026-06-15%20112426.png)
+![Screenshot 4](./public/Screenshot%202026-06-15%20112437.png)
+
 ## 🌟 Key Features
 
 ### 🩺 Diabetes Readmission Assessment
