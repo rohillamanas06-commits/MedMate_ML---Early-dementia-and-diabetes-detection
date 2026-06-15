@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LogOut, LayoutDashboard, Activity, Brain, Sidebar, X, Home, Moon, Sun } from "lucide-react";
+import { LogOut, LayoutDashboard, Activity, Brain, Sidebar, X, Home, Moon, Sun, BarChart3 } from "lucide-react";
 import { api } from "@/lib/api";
 
 export default function AppLayout({ children }) {
@@ -62,6 +62,9 @@ export default function AppLayout({ children }) {
               </Link>
               <Link to="/dementia" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary hover:text-primary transition-colors">
                 <Brain className="h-4 w-4" /> Dementia
+              </Link>
+              <Link to="/models" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary hover:text-primary transition-colors">
+                <BarChart3 className="h-4 w-4" /> Models
               </Link>
               <button onClick={() => { setTheme(t => t === "light" ? "dark" : "light"); setSidebarOpen(false); }} className="flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-secondary hover:text-primary">
                 {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

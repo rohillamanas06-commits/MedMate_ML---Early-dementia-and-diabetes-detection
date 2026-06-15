@@ -9,6 +9,7 @@ import Dashboard from "@/pages/Dashboard";
 import HistoryDetail from "@/pages/HistoryDetail";
 import Diabetes from "@/pages/Diabetes";
 import Dementia from "@/pages/Dementia";
+import Models from "@/pages/Models";
 import About from "@/pages/About";
 import FAQ from "@/pages/FAQ";
 import Privacy from "@/pages/Privacy";
@@ -40,6 +41,7 @@ export default function App() {
           <Route path="/dashboard/history/:id" element={<PrivateRoute><HistoryDetail /></PrivateRoute>} />
           <Route path="/diabetes" element={<PrivateRoute><Diabetes /></PrivateRoute>} />
           <Route path="/dementia" element={<PrivateRoute><Dementia /></PrivateRoute>} />
+          <Route path="/models" element={<PrivateRoute><Models /></PrivateRoute>} />
           <Route path="/about" element={<About />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/privacy" element={<Privacy />} />

@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogIn, Sidebar, X, LayoutDashboard, Activity, Brain, LogOut, Sun, Moon, Home } from "lucide-react";
+import { LogIn, Sidebar, X, LayoutDashboard, Activity, Brain, LogOut, Sun, Moon, Home, BarChart3 } from "lucide-react";
 
 const HERO_URL = "/akram-huseyn-V_0ES17m9Tc-unsplash.jpg";
 
@@ -87,6 +87,9 @@ export default function Landing() {
                   </Link>
                   <Link to="/dementia" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary hover:text-primary transition-colors">
                     <Brain className="h-4 w-4" /> Dementia
+                  </Link>
+                  <Link to="/models" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-secondary hover:text-primary transition-colors">
+                    <BarChart3 className="h-4 w-4" /> Models
                   </Link>
                 </>
               ) : (
